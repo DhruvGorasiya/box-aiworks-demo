@@ -31,6 +31,37 @@ API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 st.markdown("""
 <style>
+    /* Logo positioning */
+    .logo-container {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+    }
+    
+    .logo-container img {
+        height: 40px;
+        width: auto;
+        max-width: 150px;
+        border-radius: 8px; /* This makes the logo corners rounded */
+    }
+    
+    /* Style the Streamlit image directly */
+    .stImage img {
+        border-radius: 12px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Adjust main content to account for logo */
+    .main .block-container {
+        padding-top: 80px;
+    }
+    
     .main-header {
         font-size: 3rem;
         font-weight: bold;
@@ -128,6 +159,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def main():
+    # Add logo using Streamlit's native method
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col1:
+        try:
+            st.image("logo.png", width=150)
+        except:
+            st.write("Logo not found")
+    
     st.markdown('<h1 class="main-header">🔍 Weaviate Enterprise Search</h1>', unsafe_allow_html=True)
     st.markdown('<p style="text-align: center; font-size: 1.2rem; color: #666;">Advanced Search & AI-Powered Document Discovery</p>', unsafe_allow_html=True)
     
