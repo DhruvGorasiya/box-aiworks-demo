@@ -11,6 +11,6 @@ ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_APIKEY')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 # App configuration
-APP_TITLE = "Weaviate Enterprise Search"
-APP_ICON = "��"
+APP_TITLE = "Summit Sports"
+APP_ICON = "images/logo.png"
 DEFAULT_TENANTS = ["HR", "Finance", "Customer-Service"]
