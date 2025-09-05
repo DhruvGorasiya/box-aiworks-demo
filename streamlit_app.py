@@ -912,52 +912,121 @@ def main():
             </div>
             """, unsafe_allow_html=True)
             
-            # Document view type selection - always show buttons
-            st.markdown("""
-            <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
-                <h3 style="color: #ffffff; margin: 0 0 1rem 0; text-align: center;">Choose Document View</h3>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            col_chunks, col_docs = st.columns(2)
-            
-            with col_chunks:
-                if st.button("📄 Chunks", use_container_width=True, help="View document chunks for search"):
-                    st.session_state.document_view_type = "chunks"
-                    st.session_state.all_documents = fetch_documents(st.session_state.selected_tenant)
-                    st.rerun()
-            
-            with col_docs:
-                if st.button("📚 All Documents", use_container_width=True, help="View complete documents"):
-                    st.session_state.document_view_type = "full_documents"
-                    st.session_state.all_documents = read_full_documents(st.session_state.selected_tenant)
-                    st.rerun()
-            
-            # Show message only if no view type is selected
-            if st.session_state.document_view_type is None:
-                st.markdown(f"""
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
-                    <h3 style="color: #ffffff; margin: 0 0 1rem 0;">👆 Please select a document view above</h3>
-                    <p style="color: rgba(255, 255, 255, 0.8); margin: 0;">Choose either "Chunks" or "All Documents" to view the {st.session_state.selected_tenant} documents.</p>
+            # Check if we should show search results
+            if st.session_state.current_view == "search" and st.session_state.search_results:
+                # Enhanced search results header
+                st.markdown("""
+                <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid rgba(59, 130, 246, 0.3); backdrop-filter: blur(10px);">
+                    <h2 style="color: #ffffff; margin: 0 0 1.5rem 0; text-align: center; font-size: 2rem;">🔍 Search Results</h2>
                 </div>
                 """, unsafe_allow_html=True)
-                return  # Exit early without showing documents
-            
-            # Document display based on view type - only show when user explicitly chooses
-            if st.session_state.document_view_type == "chunks":
-                # Show chunks only when user clicks "Chunks" button
-                documents = st.session_state.all_documents
-                if documents:
-                    for i, doc in enumerate(documents[:10]):
-                        with st.container():
+                
+                # Enhanced search info display
+                search_type_badge = f'<span class="search-type-badge {st.session_state.search_results["search_type"]}">{st.session_state.search_results["search_type"].upper()}</span>'
+                
+                col_info1, col_info2, col_info3 = st.columns(3)
+                with col_info1:
+                    st.markdown(f"""
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <p style="color: #ffffff; margin: 0; font-weight: 600;">Search Type</p>
+                        <div style="margin-top: 0.5rem;">{search_type_badge}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col_info2:
+                    st.markdown(f"""
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <p style="color: #ffffff; margin: 0; font-weight: 600;">Query</p>
+                        <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 0.9rem;">{st.session_state.search_results['query']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                with col_info3:
+                    st.markdown(f"""
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <p style="color: #ffffff; margin: 0; font-weight: 600;">Results Found</p>
+                        <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 1.5rem; font-weight: 700;">{st.session_state.search_results['total_count']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Enhanced document display
+                for i, doc in enumerate(st.session_state.search_results['documents']):
+                    with st.container():
+                        # Check if this is a generated response
+                        is_generated = doc.get('file_name') == 'AI Generated Response'
+                        
+                        if is_generated:
+                            # Show full content for generated responses
                             st.markdown(f"""
                             <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both;">
-                                <h4> {doc['file_name']} (Chunk {doc.get('chunk_index', 'N/A')})</h4>
-                                <p><strong>Content:</strong> {doc['content']}...</p>
-                                <small>ID: {doc.get('id', 'N/A')[:8]}... | Date: {doc.get('created_date', 'N/A')}</small>
+                                <h4>🤖 {doc['file_name']}</h4>
+                                <p><strong>Generated Answer:</strong></p>
+                                <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 1.5rem; border-radius: 12px; margin: 1rem 0; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                    {doc['content']}
+                                </div>
+                                <small>Date: {doc['created_date']}</small>
                             </div>
                             """, unsafe_allow_html=True)
+                        else:
+                            # Truncate regular documents
+                            st.markdown(f"""
+                            <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both;">
+                                <h4>📄 {doc['file_name']} (Chunk {doc['chunk_index']})</h4>
+                                <p><strong>Content:</strong> {doc['content']}</p>
+                                <small>ID: {doc['id'][:8]}... | Date: {doc['created_date']}</small>
+                            </div>
+                            """, unsafe_allow_html=True)
+            
+            # Show document view selection only if not showing search results
+            elif st.session_state.current_view != "search":
+                # Document view type selection - always show buttons
+                st.markdown("""
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
+                    <h3 style="color: #ffffff; margin: 0 0 1rem 0; text-align: center;">Choose Document View</h3>
+                </div>
+                """, unsafe_allow_html=True)
                 
+                col_chunks, col_docs = st.columns(2)
+                
+                with col_chunks:
+                    if st.button("📄 Chunks", use_container_width=True, help="View document chunks for search"):
+                        st.session_state.document_view_type = "chunks"
+                        st.session_state.all_documents = fetch_documents(st.session_state.selected_tenant)
+                        st.rerun()
+                
+                with col_docs:
+                    if st.button("📚 All Documents", use_container_width=True, help="View complete documents"):
+                        st.session_state.document_view_type = "full_documents"
+                        st.session_state.all_documents = read_full_documents(st.session_state.selected_tenant)
+                        st.rerun()
+                
+                # Show message only if no view type is selected
+                if st.session_state.document_view_type is None:
+                    st.markdown(f"""
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
+                        <h3 style="color: #ffffff; margin: 0 0 1rem 0;">👆 Please select a document view above</h3>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0;">Choose either "Chunks" or "All Documents" to view the {st.session_state.selected_tenant} documents.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    return  # Exit early without showing documents
+                
+                # Document display based on view type - only show when user explicitly chooses
+                if st.session_state.document_view_type == "chunks":
+                    # Show chunks only when user clicks "Chunks" button
+                    documents = st.session_state.all_documents
+                    if documents:
+                        for i, doc in enumerate(documents[:10]):
+                            with st.container():
+                                st.markdown(f"""
+                                <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both;">
+                                    <h4> {doc['file_name']} (Chunk {doc.get('chunk_index', 'N/A')})</h4>
+                                    <p><strong>Content:</strong> {doc['content']}...</p>
+                                    <small>ID: {doc.get('id', 'N/A')[:8]}... | Date: {doc.get('created_date', 'N/A')}</small>
+                                </div>
+                                """, unsafe_allow_html=True)
+                    
                     if len(documents) > 10:
                         st.markdown(f"""
                         <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; margin: 1rem 0; border: 1px solid rgba(255, 255, 255, 0.2); text-align: center;">
@@ -965,52 +1034,57 @@ def main():
                         </div>
                         """, unsafe_allow_html=True)
 
-            elif st.session_state.document_view_type == "full_documents":
-                # Show full documents only when user clicks "All Documents" button
-                documents = st.session_state.all_documents
-                if documents:
-                    for i, doc in enumerate(documents):
-                        with st.container():
-                            # Create a unique key for each document's expand state
-                            expand_key = f"expand_full_doc_{i}"
-                            
-                            # Initialize expand state if not exists
-                            if expand_key not in st.session_state:
-                                st.session_state[expand_key] = False
-                            
-                            # Clickable document card
-                            if st.button(
-                                f"📚 {doc['file_name']}\n\n"
-                                f"Content: {doc['content'][:200]}{'...' if len(doc['content']) > 200 else ''}",
-                                key=f"full_doc_button_{i}",
-                                use_container_width=True,
-                                help="Click to view the entire document"
-                            ):
-                                st.session_state[expand_key] = not st.session_state[expand_key]
-                                st.rerun()
-                            
-                            # Show full content if expanded
-                            if st.session_state[expand_key]:
-                                # Clean the content by removing ALL HTML tags
-                                import re
-                                clean_content = re.sub(r'<[^>]+>', '', doc['content'])
+                elif st.session_state.document_view_type == "full_documents":
+                    # Show full documents only when user clicks "All Documents" button
+                    documents = st.session_state.all_documents
+                    if documents:
+                        for i, doc in enumerate(documents):
+                            with st.container():
+                                # Create a unique key for each document's expand state
+                                expand_key = f"expand_full_doc_{i}"
                                 
-                                st.markdown(f"""
-                                <div class="document-card" style="animation: fadeInUp 0.5s ease-out; margin-top: 1rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.5rem;">
-                                    <h4>📚 Full Document - {doc['file_name']}</h4>
-                                    <div style="background: #ffffff; padding: 1.5rem; border-radius: 12px; margin: 1rem 0; border: 1px solid #e5e7eb; line-height: 1.6; max-height: 500px; overflow-y: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                        <div style="color: #000000 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; white-space: pre-wrap;">
-                                            <div class="document-content">
-                                                {clean_content}
-                                            
-                                """, unsafe_allow_html=True)
-                else:
-                    st.markdown("""
-                    <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; border: 2px solid rgba(245, 158, 11, 0.3); text-align: center;">
-                        <h3 style="color: #ffffff; margin: 0 0 1rem 0;">⚠️ No Documents Found</h3>
-                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0;">No documents found for this tenant. Please check your data or try a different department.</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                                # Initialize expand state if not exists
+                                if expand_key not in st.session_state:
+                                    st.session_state[expand_key] = False
+                                
+                                # Clickable document card
+                                if st.button(
+                                    f"📚 {doc['file_name']}\n\n"
+                                    f"Content: {doc['content'][:200]}{'...' if len(doc['content']) > 200 else ''}",
+                                    key=f"full_doc_button_{i}",
+                                    use_container_width=True,
+                                    help="Click to view the entire document"
+                                ):
+                                    st.session_state[expand_key] = not st.session_state[expand_key]
+                                    st.rerun()
+                                
+                                # Show full content if expanded
+                                if st.session_state[expand_key]:
+                                    # Clean the content by removing ALL HTML tags
+                                    import re
+                                    clean_content = re.sub(r'<[^>]+>', '', doc['content'])
+                                    
+                                    st.markdown(f"""
+                                    <div class="document-card" style="animation: fadeInUp 0.5s ease-out; margin-top: 1rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.5rem;">
+                                        <h4>📚 Full Document - {doc['file_name']}</h4>
+                                        <div style="background: #ffffff; padding: 1.5rem; border-radius: 12px; margin: 1rem 0; border: 1px solid #e5e7eb; line-height: 1.6; max-height: 500px; overflow-y: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            <div style="color: #000000 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; white-space: pre-wrap;">
+                                                <div class="document-content">
+                                                    {clean_content}
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <small style="color: #6b7280; font-size: 0.875rem; font-weight: 500;">File: {doc.get('file_path', 'N/A')}</small>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+                    else:
+                        st.markdown("""
+                        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%); padding: 2rem; border-radius: 16px; margin: 2rem 0; border: 2px solid rgba(245, 158, 11, 0.3); text-align: center;">
+                            <h3 style="color: #ffffff; margin: 0 0 1rem 0;">⚠️ No Documents Found</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); margin: 0;">No documents found for this tenant. Please check your data or try a different department.</p>
+                        </div>
+                        """, unsafe_allow_html=True)
         else:
             st.markdown("""
             <div style="background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
@@ -1020,134 +1094,82 @@ def main():
             """, unsafe_allow_html=True)
     
     if st.session_state.selected_tenant:
-        if st.session_state.current_view == "search" and st.session_state.search_results:
-            # Enhanced search results header
-            st.markdown("""
-            <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid rgba(59, 130, 246, 0.3); backdrop-filter: blur(10px);">
-                <h2 style="color: #ffffff; margin: 0 0 1.5rem 0; text-align: center; font-size: 2rem;">🔍 Search Results</h2>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Enhanced search info display
-            search_type_badge = f'<span class="search-type-badge {st.session_state.search_results["search_type"]}">{st.session_state.search_results["search_type"].upper()}</span>'
-            
-            col_info1, col_info2, col_info3 = st.columns(3)
-            with col_info1:
-                st.markdown(f"""
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <p style="color: #ffffff; margin: 0; font-weight: 600;">Search Type</p>
-                    <div style="margin-top: 0.5rem;">{search_type_badge}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with col_info2:
-                st.markdown(f"""
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <p style="color: #ffffff; margin: 0; font-weight: 600;">Query</p>
-                    <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 0.9rem;">{st.session_state.search_results['query']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with col_info3:
-                st.markdown(f"""
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <p style="color: #ffffff; margin: 0; font-weight: 600;">Results Found</p>
-                    <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 1.5rem; font-weight: 700;">{st.session_state.search_results['total_count']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            
-            # Enhanced document display
-            for i, doc in enumerate(st.session_state.search_results['documents']):
-                with st.container():
-                    # Check if this is a generated response
-                    is_generated = doc.get('file_name') == 'AI Generated Response'
-                    
-                    if is_generated:
-                        # Show full content for generated responses
-                        st.markdown(f"""
-                        <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both;">
-                            <h4>🤖 {doc['file_name']}</h4>
-                            <p><strong>Generated Answer:</strong></p>
-                            <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 1.5rem; border-radius: 12px; margin: 1rem 0; border: 1px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                                {doc['content']}
-                            </div>
-                            <small>Date: {doc['created_date']}</small>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    else:
-                        # Truncate regular documents
-                        st.markdown(f"""
-                        <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both;">
-                            <h4>📄 {doc['file_name']} (Chunk {doc['chunk_index']})</h4>
-                            <p><strong>Content:</strong> {doc['content']}</p>
-                            <small>ID: {doc['id'][:8]}... | Date: {doc['created_date']}</small>
-                        </div>
-                        """, unsafe_allow_html=True)
-        
-        elif st.session_state.current_view == "agent" and hasattr(st.session_state, 'agent_response') and st.session_state.agent_response:
-            # Enhanced agent response header
-            st.markdown("""
-            <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid rgba(139, 92, 246, 0.3); backdrop-filter: blur(10px);">
-                <h2 style="color: #ffffff; margin: 0 0 1.5rem 0; text-align: center; font-size: 2rem;">🤖 AI Agent Response</h2>
-            </div>
-            """, unsafe_allow_html=True)
-            
+        if st.session_state.current_view == "agent" and hasattr(st.session_state, 'agent_response') and st.session_state.agent_response:
             agent_resp = st.session_state.agent_response
             
-            # Enhanced agent info display
-            agent_badge = '<span class="search-type-badge generative">AGENT</span>'
-            
-            col_agent1, col_agent2 = st.columns(2)
-            with col_agent1:
-                st.markdown(f"""
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <p style="color: #ffffff; margin: 0; font-weight: 600;">Response Type</p>
-                    <div style="margin-top: 0.5rem;">{agent_badge}</div>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with col_agent2:
-                st.markdown(f"""
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
-                    <p style="color: #ffffff; margin: 0; font-weight: 600;">Query</p>
-                    <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 0.9rem;">{agent_resp['query']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            
-            # Enhanced agent response display
-            st.markdown(f"""
-            <div class="document-card" style="animation: fadeInUp 0.5s ease-out;">
-                <h4>🤖 AI Agent Response</h4>
-                <p><strong>Generated Answer:</strong></p>
-                <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 2rem; border-radius: 16px; margin: 1.5rem 0; border: 2px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); line-height: 1.7;">
-                    {agent_resp.get('answer', 'No answer available')}
-                </div>
-                <small>Generated by AI Agent | Query: {agent_resp['query'][:50]}{'...' if len(agent_resp['query']) > 50 else ''}</small>
-            </div>
-            """, unsafe_allow_html=True)
-
-            # Display source documents if available
-            if agent_resp.get('source_documents'):
+            # Display the beautifully formatted agent response using the pretty_text from search_functions.py
+            if agent_resp.get('pretty_text'):
                 st.markdown("""
-                <div style="margin-top: 2rem;">
-                    <h3 style="color: #ffffff; margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">📚 Source Documents</h3>
-                    <p style="color: rgba(255, 255, 255, 0.8); text-align: center; margin-bottom: 1.5rem;">Documents referenced by the AI Agent to generate the response</p>
+                <div style="background: #ffffff; padding: 2rem; border-radius: 12px; margin: 1rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                """, unsafe_allow_html=True)
+                
+                # Display the formatted text in a code block to preserve the boxed formatting
+                st.code(agent_resp['pretty_text'], language=None)
+                
+                # Close the container
+                st.markdown("</div>", unsafe_allow_html=True)
+            else:
+                # Fallback to the old display if pretty_text is not available
+                st.markdown("""
+                <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid rgba(139, 92, 246, 0.3); backdrop-filter: blur(10px);">
+                    <h2 style="color: #ffffff; margin: 0 0 1.5rem 0; text-align: center; font-size: 2rem;">🤖 AI Agent Response</h2>
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Display each source document
-                for i, doc in enumerate(agent_resp['source_documents']):
+                agent_resp = st.session_state.agent_response
+                
+                # Enhanced agent info display
+                agent_badge = '<span class="search-type-badge generative">AGENT</span>'
+                
+                col_agent1, col_agent2 = st.columns(2)
+                with col_agent1:
                     st.markdown(f"""
-                    <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both; margin-bottom: 1rem;">
-                        <p><strong>Content:</strong> {doc.get('content', 'No content available')}</p>
-                        <small>ID: {doc.get('id', 'N/A')[:8]}... | Date: {doc.get('created_date', 'N/A')} | Score: {doc.get('score', 'N/A')}</small>
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <p style="color: #ffffff; margin: 0; font-weight: 600;">Response Type</p>
+                        <div style="margin-top: 0.5rem;">{agent_badge}</div>
                     </div>
                     """, unsafe_allow_html=True)
-        
+                
+                with col_agent2:
+                    st.markdown(f"""
+                    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <p style="color: #ffffff; margin: 0; font-weight: 600;">Query</p>
+                        <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 0.9rem;">{agent_resp['query']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Enhanced agent response display
+                st.markdown(f"""
+                <div class="document-card" style="animation: fadeInUp 0.5s ease-out;">
+                    <h4>🤖 AI Agent Response</h4>
+                    <p><strong>Generated Answer:</strong></p>
+                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 2rem; border-radius: 16px; margin: 1.5rem 0; border: 2px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); line-height: 1.7;">
+                        {agent_resp.get('answer', 'No answer available')}
+                    </div>
+                    <small>Generated by AI Agent | Query: {agent_resp['query'][:50]}{'...' if len(agent_resp['query']) > 50 else ''}</small>
+                </div>
+                """, unsafe_allow_html=True)
+
+                # Display source documents if available
+                if agent_resp.get('source_documents'):
+                    st.markdown("""
+                    <div style="margin-top: 2rem;">
+                        <h3 style="color: #ffffff; margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">📚 Source Documents</h3>
+                        <p style="color: rgba(255, 255, 255, 0.8); text-align: center; margin-bottom: 1.5rem;">Documents referenced by the AI Agent to generate the response</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Display each source document
+                    for i, doc in enumerate(agent_resp['source_documents']):
+                        st.markdown(f"""
+                        <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both; margin-bottom: 1rem;">
+                            <p><strong>Content:</strong> {doc.get('content', 'No content available')}</p>
+                            <small>ID: {doc.get('id', 'N/A')[:8]}... | Date: {doc.get('created_date', 'N/A')} | Score: {doc.get('score', 'N/A')}</small>
+                        </div>
+                        """, unsafe_allow_html=True)
+
     
     st.markdown("---")
     st.markdown("""
