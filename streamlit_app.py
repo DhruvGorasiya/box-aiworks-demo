@@ -60,15 +60,14 @@ st.markdown("""
     background-color: rgba(0, 0, 0, 0) !important;
 }
 
-
 /* Logos in the existing white band at the top (no background) */
 .top-logos {
   position: fixed;
-  top: 8px;                   /* vertical offset */
-  left: 0;                    /* span full width */
-  width: 100%;                /* take the whole width */
+  top: 8px;
+  left: 0;
+  width: 100%;
   display: flex;
-  justify-content: center;    /* center horizontally */
+  justify-content: center;
   align-items: center;
   gap: 36px;
   z-index: 1000;
@@ -85,38 +84,36 @@ st.markdown("""
 }
 
 [data-testid="stSidebar"] .sidebar-logos img{
-  height:32px;     /* adjust size */
+  height:32px;
   display:block;
 }
-
 
 .top-logos img {
   height: 36px;  
 }
 
-
-  /* Sidebar */
-  [data-testid="stSidebar"] {
+/* Sidebar - works in both light and dark mode */
+[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #9dbce2 0%, #5a7ebd 50%, #344e8a 100%) !important;
     color: #f1f5f9 !important;
 }
-            
-    /* Sidebar headings (st.header, st.subheader, etc.) */
-    [data-testid="stSidebar"] h1,
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] h3,
-    [data-testid="stSidebar"] h4,
-    [data-testid="stSidebar"] h5,
-    [data-testid="stSidebar"] h6 {
-        color: #f8fafc !important;  /* near-white */
-    }
 
-    /* Sidebar labels (for selectboxes, text inputs, sliders, etc.) */
-    [data-testid="stSidebar"] label {
-        color: #e2e8f0 !important;  /* light gray */
-        font-weight: 600;
-    }
-    
+/* Sidebar headings - adaptive colors */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] h4,
+[data-testid="stSidebar"] h5,
+[data-testid="stSidebar"] h6 {
+    color: #f8fafc !important;
+}
+
+/* Sidebar labels - adaptive colors */
+[data-testid="stSidebar"] label {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+}
+
 /* Sidebar buttons with sunset pink gradient */
 [data-testid="stSidebar"] div[data-testid="stButton"] > button {
     background: linear-gradient(135deg, #f8b6c1, #f18ca9, #e16385) !important;
@@ -130,42 +127,40 @@ st.markdown("""
     transition: opacity 0.2s ease-in-out;
 }
 
-/* Hover effect */
 [data-testid="stSidebar"] div[data-testid="stButton"] > button:hover {
     opacity: 0.9 !important;
 }
 
-/* Disabled state */
 [data-testid="stSidebar"] div[data-testid="stButton"] > button:disabled {
     background: #f8b6c1 !important;
     color: #ffffff !important;
     cursor: not-allowed;
 }   
 
-  /* Main title */
-  .main-header{
+/* Main title - adaptive to theme */
+.main-header{
     font-size:3rem;
     font-weight:800;
     line-height:1.1;
     text-align:center;
     margin:0 0 .5rem 0;
-    color:var(--ink) !important;
+    color: var(--text-color) !important;
     background:none !important;
     -webkit-background-clip:unset !important;
     -webkit-text-fill-color:initial !important;
-  }
+}
 
-  /* Subheading */
-  .subheader{
+/* Subheading - adaptive to theme */
+.subheader{
     text-align:center;
     font-size:1.125rem;
-    color:var(--sub);
+    color: var(--text-color-secondary);
     margin-bottom:1.25rem;
-  }
+}
 
-  /* Tenant cards */
-  .tenant-card,
-  .tenant-btn{
+/* Tenant cards - adaptive colors */
+.tenant-card,
+.tenant-btn{
     display:block;
     width:100%;
     text-align:center;
@@ -176,53 +171,163 @@ st.markdown("""
     color:white;
     box-shadow:0 2px 8px rgba(0,0,0,.04);
     cursor:pointer;
-  }
-  .tenant-card:hover,
-  .tenant-btn:hover{
+}
+
+.tenant-card:hover,
+.tenant-btn:hover{
     transform:translateY(-3px);
     transition:transform .15s ease;
-  }
+}
 
-  /* Document card */
-  .document-card{
-    background:var(--card);
+/* Document card - adaptive to theme */
+.document-card{
+    background: var(--background-color);
     padding:1.25rem;
     border-radius:12px;
-    border:1px solid var(--card-border);
+    border:1px solid var(--border-color);
     box-shadow:0 2px 8px rgba(0,0,0,.04);
     margin:.75rem 0;
-  }
-  .document-card h4{margin:0 0 .5rem;font-size:1.05rem;color:var(--ink)}
-  .document-card p{margin:.25rem 0;color:#1f2937}
-  .document-card small{color:#6b7280}
-  .document-card strong{color:var(--ink)}
+}
 
-  /* Search type badge (chips) */
-  .search-type-badge{
+.document-card h4{
+    margin:0 0 .5rem;
+    font-size:1.05rem;
+    color: var(--text-color);
+}
+
+.document-card p{
+    margin:.25rem 0;
+    color: var(--text-color);
+}
+
+.document-card small{
+    color: var(--text-color-secondary);
+}
+
+.document-card strong{
+    color: var(--text-color);
+}
+
+/* Search type badge (chips) */
+.search-type-badge{
     display:inline-block;
     padding:.25rem .6rem;
     border-radius:999px;
     font-size:.8rem;
     font-weight:600;
     margin:.1rem 0;
-  }
-  .keyword { background:#e3f2fd; color:#1976d2; }
-  .vector { background:#f3e5f5; color:#7b1fa2; }
-  .hybrid { background:#e8f5e8; color:#388e3c; }
-  .generative { background:#fff3e0; color:#f57c00; }
-            
-    /* Tenant and section headers */
-    h2 {
-        color: #ffffff !important; 
-        font-weight: 500 !important;
-    }
-            
-    /* Make only text input labels white */
+}
+
+.keyword { background:#e3f2fd; color:#1976d2; }
+.vector { background:#f3e5f5; color:#7b1fa2; }
+.hybrid { background:#e8f5e8; color:#388e3c; }
+.generative { background:#fff3e0; color:#f57c00; }
+
+/* Tenant and section headers - adaptive */
+h2 {
+    color: var(--text-color) !important; 
+    font-weight: 500 !important;
+}
+
+/* Text input labels - adaptive */
 div.stTextInput label {
-    color: #ffffff !important;
+    color: var(--text-color) !important;
     font-weight: 600;
 }
 
+/* Light mode specific styles */
+[data-theme="light"] {
+    --text-color: #111827;
+    --text-color-secondary: #6b7280;
+    --background-color: #ffffff;
+    --border-color: #e5e7eb;
+    --card-border: #e5e7eb;
+}
+
+/* Dark mode specific styles */
+[data-theme="dark"] {
+    --text-color: #f8fafc;
+    --text-color-secondary: #94a3b8;
+    --background-color: #1e293b;
+    --border-color: #334155;
+    --card-border: #334155;
+}
+
+/* Fallback for when theme detection doesn't work */
+.stApp {
+    --text-color: #111827;
+    --text-color-secondary: #6b7280;
+    --background-color: #ffffff;
+    --border-color: #e5e7eb;
+    --card-border: #e5e7eb;
+}
+
+/* Dark mode detection fallback */
+@media (prefers-color-scheme: dark) {
+    .stApp {
+        --text-color: #f8fafc;
+        --text-color-secondary: #94a3b8;
+        --background-color: #1e293b;
+        --border-color: #334155;
+        --card-border: #334155;
+    }
+}
+
+/* Ensure all text elements use theme colors */
+.stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
+    color: var(--text-color) !important;
+}
+
+.stMarkdown p {
+    color: var(--text-color) !important;
+}
+
+/* Main content area text */
+.main .stMarkdown h1,
+.main .stMarkdown h2,
+.main .stMarkdown h3,
+.main .stMarkdown h4,
+.main .stMarkdown h5,
+.main .stMarkdown h6 {
+    color: var(--text-color) !important;
+}
+
+.main .stMarkdown p {
+    color: var(--text-color) !important;
+}
+
+/* Success, info, warning messages */
+.stSuccess {
+    color: var(--text-color) !important;
+}
+
+.stInfo {
+    color: var(--text-color) !important;
+}
+
+.stWarning {
+    color: var(--text-color) !important;
+}
+
+/* Metric components */
+[data-testid="metric-container"] {
+    background: var(--background-color) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+[data-testid="metric-container"] [data-testid="metric-value"] {
+    color: var(--text-color) !important;
+}
+
+[data-testid="metric-container"] [data-testid="metric-label"] {
+    color: var(--text-color-secondary) !important;
+}
+
+/* Footer text */
+.footer-text {
+    color: var(--text-color) !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -343,7 +448,7 @@ def main():
         # st.markdown('<img src="images/logo.png" class="logo-img">', unsafe_allow_html=True)
     with right:
         st.markdown('<h1 class="main-header">Summit Sports</h1>', unsafe_allow_html=True)
-        st.markdown('<p style="text-align: center; font-size: 1.2rem; color: #666;">Advanced Search & AI-Powered Document Discovery</p>', unsafe_allow_html=True)
+        st.markdown('<p class="subheader">Advanced Search & AI-Powered Document Discovery</p>', unsafe_allow_html=True)
     
     if 'selected_tenant' not in st.session_state:
         st.session_state.selected_tenant = None
@@ -567,7 +672,7 @@ def main():
     
     st.markdown("---")
     st.markdown("""
-    <div style="text-align: center; color: #ffffff; padding: 2rem;">
+    <div class="footer-text" style="text-align: center; padding: 2rem;">
         <p> Powered by <strong>Weaviate</strong> | Built with <strong>FastAPI</strong> & <strong>Streamlit</strong></p>
         <p>Features: Keyword Search | Vector Search | Hybrid Search | Generative AI | Query Agent</p>
     </div>
