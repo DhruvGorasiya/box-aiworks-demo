@@ -979,8 +979,108 @@ def main():
                             </div>
                             """, unsafe_allow_html=True)
             
-            # Show document view selection only if not showing search results
-            elif st.session_state.current_view != "search":
+            # Check if we should show agent response
+            elif st.session_state.current_view == "agent" and hasattr(st.session_state, 'agent_response') and st.session_state.agent_response:
+                agent_resp = st.session_state.agent_response
+                
+                # Display the beautifully formatted agent response using the pretty_text from search_functions.py
+                if agent_resp.get('pretty_text'):
+                    st.markdown("""
+                    <div style="background: #ffffff; padding: 2rem; border-radius: 12px; margin: 1rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    """, unsafe_allow_html=True)
+                    
+                    # Clean the text to handle Unicode surrogates
+                    try:
+                        # Try to encode and decode to handle surrogates
+                        clean_text = agent_resp['pretty_text'].encode('utf-8', errors='replace').decode('utf-8')
+                        
+                        # Use text_area with proper styling for better text wrapping
+                        st.text_area(
+                            value=clean_text, 
+                            height=400, 
+                            disabled=True, 
+                            key="agent_response_display",
+                            help="AI Agent Response"
+                        )
+                    except Exception as e:
+                        # Fallback: display as markdown with monospace font and proper wrapping
+                        # Apply the same encoding fix to handle Unicode surrogates
+                        try:
+                            clean_fallback_text = agent_resp['pretty_text'].encode('utf-8', errors='replace').decode('utf-8')
+                        except:
+                            clean_fallback_text = str(agent_resp['pretty_text']).encode('utf-8', errors='replace').decode('utf-8')
+                        
+                        st.markdown(f"""
+                        <div style="font-family: 'Courier New', monospace; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6; max-width: 100%;">
+                            {clean_fallback_text}
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    # Close the container
+                    st.markdown("</div>", unsafe_allow_html=True)
+                else:
+                    # Fallback to the old display if pretty_text is not available
+                    st.markdown("""
+                    <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid rgba(139, 92, 246, 0.3); backdrop-filter: blur(10px);">
+                        <h2 style="color: #ffffff; margin: 0 0 1.5rem 0; text-align: center; font-size: 2rem;">🤖 AI Agent Response</h2>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Enhanced agent info display
+                    agent_badge = '<span class="search-type-badge generative">AGENT</span>'
+                    
+                    col_agent1, col_agent2 = st.columns(2)
+                    with col_agent1:
+                        st.markdown(f"""
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <p style="color: #ffffff; margin: 0; font-weight: 600;">Response Type</p>
+                            <div style="margin-top: 0.5rem;">{agent_badge}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    with col_agent2:
+                        st.markdown(f"""
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+                            <p style="color: #ffffff; margin: 0; font-weight: 600;">Query</p>
+                            <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 0.9rem;">{agent_resp['query']}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    
+                    # Enhanced agent response display
+                    st.markdown(f"""
+                    <div class="document-card" style="animation: fadeInUp 0.5s ease-out;">
+                        <h4>🤖 AI Agent Response</h4>
+                        <p><strong>Generated Answer:</strong></p>
+                        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 2rem; border-radius: 16px; margin: 1.5rem 0; border: 2px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); line-height: 1.7;">
+                            {agent_resp.get('answer', 'No answer available')}
+                        </div>
+                        <small>Generated by AI Agent | Query: {agent_resp['query'][:50]}{'...' if len(agent_resp['query']) > 50 else ''}</small>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    # Display source documents if available
+                    if agent_resp.get('source_documents'):
+                        st.markdown("""
+                        <div style="margin-top: 2rem;">
+                            <h3 style="color: #ffffff; margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">📚 Source Documents</h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); text-align: center; margin-bottom: 1.5rem;">Documents referenced by the AI Agent to generate the response</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        # Display each source document
+                        for i, doc in enumerate(agent_resp['source_documents']):
+                            st.markdown(f"""
+                            <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both; margin-bottom: 1rem;">
+                                <p><strong>Content:</strong> {doc.get('content', 'No content available')}</p>
+                                <small>ID: {doc.get('id', 'N/A')[:8]}... | Date: {doc.get('created_date', 'N/A')} | Score: {doc.get('score', 'N/A')}</small>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+            
+            # Show document view selection only if not showing search results or agent response
+            elif st.session_state.current_view not in ["search", "agent"]:
                 # Document view type selection - always show buttons
                 st.markdown("""
                 <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);">
@@ -1072,11 +1172,7 @@ def main():
                                                 <div class="document-content">
                                                     {clean_content}
                                                     
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <small style="color: #6b7280; font-size: 0.875rem; font-weight: 500;">File: {doc.get('file_path', 'N/A')}</small>
-                                    </div>
+                                                
                                     """, unsafe_allow_html=True)
                     else:
                         st.markdown("""
@@ -1092,84 +1188,6 @@ def main():
                 <p style="color: rgba(255, 255, 255, 0.8); margin: 0;">Choose a department from the left panel to view documents and start searching.</p>
             </div>
             """, unsafe_allow_html=True)
-    
-    if st.session_state.selected_tenant:
-        if st.session_state.current_view == "agent" and hasattr(st.session_state, 'agent_response') and st.session_state.agent_response:
-            agent_resp = st.session_state.agent_response
-            
-            # Display the beautifully formatted agent response using the pretty_text from search_functions.py
-            if agent_resp.get('pretty_text'):
-                st.markdown("""
-                <div style="background: #ffffff; padding: 2rem; border-radius: 12px; margin: 1rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                """, unsafe_allow_html=True)
-                
-                # Display the formatted text in a code block to preserve the boxed formatting
-                st.code(agent_resp['pretty_text'], language=None)
-                
-                # Close the container
-                st.markdown("</div>", unsafe_allow_html=True)
-            else:
-                # Fallback to the old display if pretty_text is not available
-                st.markdown("""
-                <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 2px solid rgba(139, 92, 246, 0.3); backdrop-filter: blur(10px);">
-                    <h2 style="color: #ffffff; margin: 0 0 1.5rem 0; text-align: center; font-size: 2rem;">🤖 AI Agent Response</h2>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                agent_resp = st.session_state.agent_response
-                
-                # Enhanced agent info display
-                agent_badge = '<span class="search-type-badge generative">AGENT</span>'
-                
-                col_agent1, col_agent2 = st.columns(2)
-                with col_agent1:
-                    st.markdown(f"""
-                    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
-                        <p style="color: #ffffff; margin: 0; font-weight: 600;">Response Type</p>
-                        <div style="margin-top: 0.5rem;">{agent_badge}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                with col_agent2:
-                    st.markdown(f"""
-                    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2);">
-                        <p style="color: #ffffff; margin: 0; font-weight: 600;">Query</p>
-                        <p style="color: #ffffff; margin: 0.5rem 0 0 0; font-size: 0.9rem;">{agent_resp['query']}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                
-                st.markdown("<br>", unsafe_allow_html=True)
-                
-                # Enhanced agent response display
-                st.markdown(f"""
-                <div class="document-card" style="animation: fadeInUp 0.5s ease-out;">
-                    <h4>🤖 AI Agent Response</h4>
-                    <p><strong>Generated Answer:</strong></p>
-                    <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); padding: 2rem; border-radius: 16px; margin: 1.5rem 0; border: 2px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); line-height: 1.7;">
-                        {agent_resp.get('answer', 'No answer available')}
-                    </div>
-                    <small>Generated by AI Agent | Query: {agent_resp['query'][:50]}{'...' if len(agent_resp['query']) > 50 else ''}</small>
-                </div>
-                """, unsafe_allow_html=True)
-
-                # Display source documents if available
-                if agent_resp.get('source_documents'):
-                    st.markdown("""
-                    <div style="margin-top: 2rem;">
-                        <h3 style="color: #ffffff; margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem;">📚 Source Documents</h3>
-                        <p style="color: rgba(255, 255, 255, 0.8); text-align: center; margin-bottom: 1.5rem;">Documents referenced by the AI Agent to generate the response</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Display each source document
-                    for i, doc in enumerate(agent_resp['source_documents']):
-                        st.markdown(f"""
-                        <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both; margin-bottom: 1rem;">
-                            <p><strong>Content:</strong> {doc.get('content', 'No content available')}</p>
-                            <small>ID: {doc.get('id', 'N/A')[:8]}... | Date: {doc.get('created_date', 'N/A')} | Score: {doc.get('score', 'N/A')}</small>
-                        </div>
-                        """, unsafe_allow_html=True)
-
     
     st.markdown("---")
     st.markdown("""

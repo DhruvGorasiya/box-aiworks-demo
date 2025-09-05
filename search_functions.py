@@ -548,7 +548,7 @@ def _format_usage_table(usage: dict, total_time) -> str:
     return f"   \ud83d\udcca Usage Statistics   \n" + "\n".join(lines) + ("\n" + footer if footer else "")
 
 def format_query_agent_response_for_ui(result: dict) -> dict:
-    """Create pretty, boxed strings that mimic print_query_agent_response.
+    """Create clean, simple strings without fancy box formatting.
     Returns a dict with `pretty_text`, `pretty_blocks`, and `usage_block`.
     """
     query = result.get("query", "")
@@ -558,8 +558,9 @@ def format_query_agent_response_for_ui(result: dict) -> dict:
     usage = result.get("usage", {}) or {}
     total_time = usage.get("total_time_sec") or result.get("total_time_sec")
 
-    s_query = _boxed("\ud83d\udd0d Original Query ", query)
-    s_answer = _boxed("\ud83d\udcdd Final Answer ", answer)
+    # Simple headers without fancy boxes, with spacing
+    s_query = f"🔍 Original Query\n{query}\n\n"
+    s_answer = f"📝 Final Answer\n{answer}\n\n"
 
     # Searches block
     if searches:
@@ -575,16 +576,16 @@ def format_query_agent_response_for_ui(result: dict) -> dict:
             search_lines.append(f"    filter_operators='{filter_ops}',")
             search_lines.append(f"    collection='{coll}'")
             search_lines.append(")")
-        s_searches = _boxed(f"\ud83d\udd2d Searches Executed {len(searches)}/{len(searches)} ", "\n".join(search_lines))
+        s_searches = f"🔍 Searches Executed {len(searches)}/{len(searches)}\n" + "\n".join(search_lines) + "\n\n"
     else:
-        s_searches = _boxed("\ud83d\udd2d Searches Executed 0/0 ", "")
+        s_searches = f"🔍 Searches Executed 0/0\n\n"
 
     # Aggregations block
     if aggregations:
         ag_lines = [repr(a) for a in aggregations]
-        s_aggs = _boxed("\ud83d\udcca Aggregations ", "\n".join(ag_lines))
+        s_aggs = f"📊 Aggregations\n" + "\n".join(ag_lines) + "\n\n"
     else:
-        s_aggs = _boxed("\ud83d\udcca No Aggregations Run ", "")
+        s_aggs = f"📊 No Aggregations Run\n\n"
 
     # Sources block
     src_docs = result.get("source_documents", []) or []
@@ -593,15 +594,15 @@ def format_query_agent_response_for_ui(result: dict) -> dict:
         oid = d.get("id") or d.get("uuid") or "?"
         coll = d.get("collection") or "Documents"
         src_lines.append(f" - object_id='{oid}' collection='{coll}'")
-    s_sources = _boxed("\ud83d\udcda Sources ", "\n".join(src_lines))
+    s_sources = f"🔗 Sources\n" + "\n".join(src_lines) + "\n\n"
 
     s_usage = _format_usage_table(usage, total_time)
 
-    pretty_blocks = [s_query, s_answer, s_searches, s_aggs, s_sources]
-    pretty_text = "\n\n".join(pretty_blocks) + ("\n\n" + s_usage if s_usage else "")
+    # Combine all sections with proper spacing
+    pretty_text = s_query + s_answer + s_searches + s_aggs + s_sources + s_usage
 
     return {
         "pretty_text": pretty_text,
-        "pretty_blocks": pretty_blocks,
-        "usage_block": s_usage,
+        "pretty_blocks": [s_query, s_answer, s_searches, s_aggs, s_sources],
+        "usage_block": s_usage
     }
