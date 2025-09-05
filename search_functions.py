@@ -278,7 +278,7 @@ def search_documents(query: str, tenant: str, search_type: str, alpha: float = 0
                 pass
 
 def query_agent(query: str, tenant: str) -> Dict:
-    """Use AI agent for complex queries"""
+    """Use AI agent for complex queries with source documents"""
     client = None
     try:
         client = get_weaviate_client()
@@ -306,10 +306,38 @@ def query_agent(query: str, tenant: str) -> Dict:
             collections=[cfg]
         )
 
+        # Extract source documents from the response
+        source_documents = []
+        try:
+            # Get the actual documents that were retrieved during the agent's searches
+            docs = client.collections.get("Documents")
+            tenant_collection = docs.with_tenant(tenant)
+            
+            # Perform a hybrid search to get relevant documents for the query
+            search_result = tenant_collection.query.hybrid(
+                query=query,
+                alpha=0.5,
+                limit=10
+            )
+            
+            for i, obj in enumerate(search_result.objects):
+                properties = obj.properties or {}
+                source_documents.append({
+                    "id": str(obj.uuid),
+                    "content": properties.get("content", "No content available"),
+                    "file_name": properties.get("file_name", f"Source_Document_{i+1}"),
+                    "chunk_index": i,
+                    "created_date": properties.get("created_date", "2024-01-01"),
+                    "score": getattr(obj, 'score', None)
+                })
+        except Exception as e:
+            logger.warning(f"Could not retrieve source documents: {e}")
+
         result = {
             "query": query,
             "tenant": tenant,
             "answer": response.final_answer,
+            "source_documents": source_documents,
             "collections": getattr(response, "collection_names", None),
             "usage": {
                 "requests": getattr(getattr(response, "usage", None), "requests", None),
@@ -328,7 +356,7 @@ def query_agent(query: str, tenant: str) -> Dict:
             ],
         }
 
-        logger.info(f"Query Agent completed for: {query} (tenant={tenant})")
+        logger.info(f"Query Agent completed for: {query} (tenant={tenant}) with {len(source_documents)} source documents")
         return result
 
     except Exception as e:
