@@ -1,5 +1,4 @@
 # Finance: Balance Sheet
-**Summit Sports Co. · "Gear up for every adventure."**
 
 ## Summary
 The balance sheet reflects a healthy liquidity position with ample cash to fund operations. Inventory levels ended the year above plan due to accelerated production of the spring line; we expect normalization by the end of Q2 2025. Accounts receivable quality remains strong with aging within our target thresholds.

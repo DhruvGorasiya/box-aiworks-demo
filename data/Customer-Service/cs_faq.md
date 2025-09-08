@@ -1,5 +1,3 @@
-# Customer Service: Knowledge Base / FAQ
-**Summit Sports Co. · "Gear up for every adventure."**
 
 ## Restringing Frequency
 Most players benefit from restringing every 10–15 hours of play. Heavier hitters or those using polyester strings may prefer shorter intervals to maintain control. If the ball begins to trampoline off the strings or you struggle to find depth, it’s time to restring.

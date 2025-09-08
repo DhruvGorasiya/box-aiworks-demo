@@ -1,5 +1,4 @@
 # Finance: FY2024 Profit & Loss
-**Summit Sports Co. · "Gear up for every adventure."**
 
 ## Management Discussion and Analysis
 Fiscal year 2024 closed with strong top-line growth driven by continued demand in North America and improved sell-through in Europe. Direct-to-consumer channels outpaced wholesale for the third consecutive quarter as we expanded our e-commerce footprint and refined paid acquisition. Gross margin improved sequentially due to lower freight rates and a favorable product mix skewing toward higher-margin rackets and premium accessories.
@@ -29,10 +28,8 @@ Operating expenses increased as we invested in brand marketing ahead of the holi
 | **Net Income**             | **$292,300** | **$398,950** | **$525,350** | **$675,450** | **$1,892,050** |
 
 ## Risks and Outlook
-Key risks include:
-- Foreign exchange volatility  
-- Continued freight variability  
-- Demand softness tied to macroeconomic conditions  
+Key risks include foreign exchange volatility, continued freight variability, and demand softness tied to macroeconomic conditions. We will monitor inventory closely, continue diversifying suppliers, and scale our loyalty program to stabilize repeat purchase behavior. 
 
-We will monitor inventory closely, continue diversifying suppliers, and scale our loyalty program to stabilize repeat purchase behavior. Our 2025 plan assumes modest revenue growth with steady gross margin and disciplined OpEx.
+Our 2025 plan assumes modest revenue growth with steady gross margin and disciplined OpEx.
+
 
