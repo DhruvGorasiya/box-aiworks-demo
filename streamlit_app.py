@@ -975,8 +975,7 @@ def main():
                             <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both;">
                                 <h4>📄 {doc['file_name']} (Chunk {doc['chunk_index']})</h4>
                                 <p><strong>Content:</strong> {doc['content']}</p>
-                                <small>ID: {doc['id'][:8]}... | Date: {doc['created_date']}</small>
-                            </div>
+                                
                             """, unsafe_allow_html=True)
             
             # Check if we should show agent response
