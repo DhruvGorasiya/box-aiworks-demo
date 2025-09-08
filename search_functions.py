@@ -46,7 +46,7 @@ def get_anthropic_generative_config():
         temperature=0.7,
     )
 
-@st.cache_data(ttl=300)  # Cache for 5 minutes
+@st.cache_data(ttl=0)  # Set to 0 to disable caching temporarily
 def fetch_tenants() -> List[Dict]:
     """Fetch available tenants from Weaviate"""
     client = None
@@ -392,7 +392,7 @@ def query_agent(query: str, tenant: str) -> Dict:
         cfg = QueryAgentCollectionConfig(
             name=collection_name,
             tenant=tenant,
-            view_properties=["content", "file_name", "created_date"]
+            view_properties=["content"]
         )
 
         response = agent.run(
