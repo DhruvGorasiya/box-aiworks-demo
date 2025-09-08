@@ -1,12 +1,8 @@
 # Finance: 2024 Sales Statement
-**Summit Sports Co. · "Gear up for every adventure."**
 
 ## Overview
-Sales in 2024 were broadly diversified across regions and channels.  
-- North America remained our largest market.  
-- Europe posted the strongest growth due to new distributor partnerships.  
-- Asia-Pacific accelerated in the second half as localized website improvements reduced cart abandonment and improved average order value.  
-- Returns remained within target thresholds, and net sales performance reflects tighter quality control at factories and better packaging on transit-sensitive items.  
+Sales in 2024 were broadly diversified across regions and channels. North America remained our largest market, while Europe posted the strongest growth due to new distributor partnerships. Asia-Pacific accelerated in the second half as localized website improvements reduced cart abandonment and improved average order value. Returns remained within target thresholds, and net sales performance reflects tighter quality control at factories and better packaging on transit-sensitive items.
+
 
 ## Regional Sales (2024)
 
@@ -20,12 +16,8 @@ Sales in 2024 were broadly diversified across regions and channels.
 | **Total**           | **$4,100,000** | **$4,550,000** | **$4,900,000** | **$5,350,000** | **$18,900,000** |
 
 ## Channel Commentary
-- Wholesale partners reported stronger than expected demand in specialty retailers, particularly for the **ProRacquet** line.  
-- The direct channel benefited from an expanded content library (buying guides, comparison charts, and reviews) that improved organic search rankings.  
-- To support future growth, the company plans to launch limited-edition colorways with pre-order campaigns to improve demand forecasting.  
+Wholesale partners reported stronger than expected demand in specialty retailers, particularly for the ProRacquet line. The direct channel benefited from an expanded content library—including buying guides, comparison charts, and reviews—that improved organic search rankings. To support future growth, the company plans to launch limited-edition colorways with pre-order campaigns to improve demand forecasting.
 
 ## Returns and Customer Sentiment
-- Gross returns were **3.2%**, primarily due to footwear sizing exchanges and cosmetic blemishes in apparel.  
-- Customer satisfaction scores improved after simplifying the return portal and expanding live chat coverage.  
-- Repeat purchase rates increased modestly.  
-- Continued investment in post-purchase education will help reduce preventable returns.  
+Gross returns were 3.2%, primarily due to footwear sizing exchanges and cosmetic blemishes in apparel. Customer satisfaction scores improved after simplifying the return portal and expanding live chat coverage, and repeat purchase rates increased modestly. Continued investment in post-purchase education will help reduce preventable returns.
+ 
