@@ -55,7 +55,7 @@ def fetch_tenants() -> List[Dict]:
         if not client:
             return []
             
-        docs = client.collections.get("Documents")
+        docs = client.collections.get("BoxDocuments")
         tenants = DEFAULT_TENANTS
         
         tenant_info = []
@@ -96,7 +96,7 @@ def fetch_documents(tenant: str) -> List[Dict]:
         if not client:
             return []
             
-        docs = client.collections.get("Documents")
+        docs = client.collections.get("BoxDocuments")
         tenant_collection = docs.with_tenant(tenant)
         
         result = tenant_collection.query.fetch_objects(limit=50)
@@ -133,7 +133,7 @@ def search_documents(query: str, tenant: str, search_type: str, alpha: float = 0
         if not client:
             return {}
             
-        docs = client.collections.get("Documents")
+        docs = client.collections.get("BoxDocuments")
         tenant_collection = docs.with_tenant(tenant)
         
         documents = []
@@ -386,7 +386,7 @@ def query_agent(query: str, tenant: str) -> Dict:
             from weaviate_agents.query import QueryAgent
             from weaviate_agents.classes import QueryAgentCollectionConfig
 
-        collection_name = "Documents"
+        collection_name = "BoxDocuments"
         agent = QueryAgent(client=client)
         
         cfg = QueryAgentCollectionConfig(
@@ -404,7 +404,7 @@ def query_agent(query: str, tenant: str) -> Dict:
         source_documents = []
         try:
             # Get the actual documents that were retrieved during the agent's searches
-            docs = client.collections.get("Documents")
+            docs = client.collections.get("BoxDocuments")
             tenant_collection = docs.with_tenant(tenant)
             
             # Perform a hybrid search to get relevant documents for the query
