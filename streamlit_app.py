@@ -1117,7 +1117,7 @@ def main():
                     # Show chunks only when user clicks "Chunks" button
                     documents = st.session_state.all_documents
                     if documents:
-                        for i, doc in enumerate(documents[:10]):
+                        for i, doc in enumerate(documents):  # ✅ Shows all documents
                             with st.container():
                                 st.markdown(f"""
                                 <div class="document-card" style="animation: fadeInUp 0.5s ease-out {i * 0.1}s both;">
@@ -1127,13 +1127,6 @@ def main():
                                 </div>
                                 """, unsafe_allow_html=True)
                     
-                    if len(documents) > 10:
-                        st.markdown(f"""
-                        <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 12px; margin: 1rem 0; border: 1px solid rgba(255, 255, 255, 0.2); text-align: center;">
-                            <p style="color: #ffffff; margin: 0; font-weight: 600;">Showing first 10 of {len(documents)} documents.</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
                 elif st.session_state.document_view_type == "full_documents":
                     # Show full documents only when user clicks "All Documents" button
                     documents = st.session_state.all_documents
